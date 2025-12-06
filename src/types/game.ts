@@ -2,7 +2,7 @@ export type Player = 'X' | 'O' | null;
 export type Board = Player[];
 export type GameMode = '1vs1' | 'vsAI';
 export type AIDifficulty = 'easy' | 'medium' | 'hard';
-export type GameStatus = 'playing' | 'won' | 'draw';
+export type GameStatus = 'idle' | 'playing' | 'won' | 'draw';
 
 export interface GameState {
     currentPlayer: Player;
