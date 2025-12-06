@@ -1,16 +1,17 @@
 import type { Board, Player, AIDifficulty } from '../../types/game';
-import { checkWinner } from './gameLogic';
+import { checkWinner, getEmptyCells, getOpponent, isValidMove, makeMove } from './gameLogic';
 
 export const getEasyMove = (board: Board): number => {
-    const emptyCells = board.map((cell, idx) => cell === null ? idx : -1).filter(idx => idx !== -1);
+    const emptyCells = getEmptyCells(board);
+    if (emptyCells.length === 0) return -1;
 
     return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
 
 export const getMediumMove = (board: Board, player: Player): number => {
     for(let i = 0; i < 9; i++) {
-        if(board[i] === null) {
-            const testBoard = [...board];
+        if(isValidMove(board, i)) {
+            const testBoard = makeMove(board, player, i);
             testBoard[i] = player;
             if(checkWinner(testBoard) === player) {
                 return i;
@@ -18,10 +19,20 @@ export const getMediumMove = (board: Board, player: Player): number => {
         }
     }
 
-    if(board[4] === null) return 4;
+    const opponent = getOpponent(player);
+    for(let i = 0; i < 9; i++) {
+        if(isValidMove(board, i)) {
+            const testBoard = makeMove(board, opponent, i);
+            if(checkWinner(testBoard) === opponent) {
+                return i;
+            } 
+        }
+    }
+
+    if(isValidMove(board, 4)) return 4;
 
     const corners = [0, 2, 6, 8];
-    const emptyCorners = corners.filter(i => board[i] === null);
+    const emptyCorners = corners.filter(i => isValidMove(board, i));
 
     if (emptyCorners.length > 0) {
         return emptyCorners[Math.floor(Math.random() * emptyCorners.length)];
@@ -38,7 +49,7 @@ export const getAIMove = (board: Board, player: Player, difficulty: AIDifficulty
     switch (difficulty) {
         case 'easy':
             return getEasyMove(board);
-        case 'easy':
+        case 'medium':
             return getMediumMove(board, player);
         case 'hard':
             return getHardMove(board, player);
