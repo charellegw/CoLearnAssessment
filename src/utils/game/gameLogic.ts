@@ -1,4 +1,4 @@
-import type { Board, Player } from '../../types/game';
+import type { Board, GameStatus, Player } from '../../types/game';
 
 export const BOARD_SIZE = 3;
 export const TOTAL_CELLS = BOARD_SIZE * BOARD_SIZE;
@@ -64,3 +64,14 @@ export const isGameOver = (board: Board): boolean => {
     return checkWinner(board) !== null || isBoardFull(board);
 };
 
+export const getGameResult = (board: Board): {winner: Player; isDraw: boolean} => {
+    const winner = checkWinner(board);
+    const isDraw = !winner && isBoardFull(board);
+    return { winner, isDraw };
+}
+
+export const getGameStatus = (board: Board): GameStatus => {
+    if (checkWinner(board)) return 'won';
+    if (isBoardFull(board)) return 'draw';
+    return 'playing';
+}
