@@ -21,6 +21,12 @@ export const isValidMove = (board: Board, position: number): boolean => {
     );
 };
 
+export const getEmptyCells = (board: Board): number[] => {
+  return board
+    .map((cell, index) => cell === null ? index : -1)
+    .filter(index => index !== -1);
+};
+
 export const makeMove = (board: Board, player: Player, position: number): Board => {
     if(!player) {
         throw new Error('Player cannot be null!');
