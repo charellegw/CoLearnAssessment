@@ -1,4 +1,4 @@
-import type { Board, GameStatus, Player } from '../../types/game';
+import type { Board, GameStatus, Player } from '../types/game';
 
 export const BOARD_SIZE = 3;
 export const TOTAL_CELLS = BOARD_SIZE * BOARD_SIZE;
@@ -14,26 +14,36 @@ export const createEmptyBoard = (): Board => {
 };
 
 export const isValidMove = (board: Board, position: number): boolean => {
-    return (
-        position >= 0 &&
-        position <= TOTAL_CELLS &&
-        board[position] === null
-    );
+    if (position < 0 && position >= TOTAL_CELLS) {
+        return false;
+    }
+
+    if (board[position] !== null) {
+        return false;
+    } 
+
+    return true;
 };
 
 export const getEmptyCells = (board: Board): number[] => {
-  return board
-    .map((cell, index) => cell === null ? index : -1)
-    .filter(index => index !== -1);
+    const emptyCells: number[] = [];
+
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === null) {
+            emptyCells.push(i);
+        }
+    }
+
+    return emptyCells;
 };
 
 export const makeMove = (board: Board, player: Player, position: number): Board => {
     if(!player) {
-        throw new Error('Player cannot be null!');
+        return board;
     }
 
     if(!isValidMove(board, position)) {
-        throw new Error(`Invalid move at position: ${position}`);
+        return board;
     }
 
     const newBoard = [...board];
@@ -43,18 +53,15 @@ export const makeMove = (board: Board, player: Player, position: number): Board 
 };
 
 export const checkWinner = (board: Board): Player => {
-    // 0 1 2
-    // 3 4 5
-    // 6 7 8
-    
     const winLines = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8], // row
-        [0, 3, 6], [1, 4, 7], [2, 5, 8], // column
-        [0, 4, 8], [2, 4, 6]             // diagonal
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
     ];
 
     for (const line of winLines) {
         const [a, b, c] = line;
+        
         if(board[a] && board[a] === board[b] && board[a] === board[c]) {
             return board[a];
         }
@@ -63,21 +70,32 @@ export const checkWinner = (board: Board): Player => {
 };
 
 export const isBoardFull = (board: Board): boolean => {
-    return board.every(cell => cell !== null);
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === null) {
+            return false;
+        }
+    }
+
+    return true;
 };
 
 export const isGameOver = (board: Board): boolean => {
-    return checkWinner(board) !== null || isBoardFull(board);
+    if (checkWinner(board) !== null) return true;
+    if (isBoardFull(board)) return true;
+
+    return false;
 };
 
 export const getGameResult = (board: Board): {winner: Player; isDraw: boolean} => {
     const winner = checkWinner(board);
     const isDraw = !winner && isBoardFull(board);
+    
     return { winner, isDraw };
 }
 
 export const getGameStatus = (board: Board): GameStatus => {
     if (checkWinner(board)) return 'won';
     if (isBoardFull(board)) return 'draw';
+
     return 'playing';
 }
