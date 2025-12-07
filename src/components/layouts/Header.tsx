@@ -4,7 +4,7 @@ export default function Header() {
     return(
         <header className="bg-white bg-opacity-10 border-b border-white border-opacity-50 px-5">
             <div className="max-w-6xl mx-auto px-4 py-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-5">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-white bg-opacity-25 rounded-2xl flex items-center justify-center">
                             <Gamepad2 size={28} className="text-white" />
